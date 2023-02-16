@@ -1,0 +1,16 @@
+.auth-page {
+  max-width: 358px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-inline: auto;
+  color: #fff;
+}
+
+@media screen and (max-width: 768px) {
+  .auth-page {
+    padding: 0 30px;
+    box-sizing: border-box;
+  }
+}

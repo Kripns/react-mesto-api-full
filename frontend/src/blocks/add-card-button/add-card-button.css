@@ -1,0 +1,24 @@
+.add-card-button {
+  width: 150px;
+  margin-left: auto;
+  background: #000;
+  background-image: url(../../images/add-button.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  border: 2px solid #fff;
+  border-radius: 2px;
+  padding: 46px 0 0;
+  cursor: pointer;
+  transition: opacity .3s;
+}
+
+.add-card-button:hover {
+  opacity: .6;
+}
+
+@media screen and (max-width: 768px) {
+  .add-card-button {
+    margin: 0 auto;
+    width: 282px;
+  }
+}

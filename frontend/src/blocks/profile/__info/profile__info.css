@@ -1,0 +1,16 @@
+.profile__info {
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #fff;
+}
+
+@media screen and (max-width: 768px) {
+  .profile__info {
+    padding: 25.25px 0 31px;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+  }
+}

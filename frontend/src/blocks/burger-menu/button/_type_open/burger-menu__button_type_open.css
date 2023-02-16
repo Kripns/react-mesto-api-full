@@ -1,0 +1,6 @@
+.burger-menu__button_type_open {
+  width: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}

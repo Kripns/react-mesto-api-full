@@ -1,0 +1,11 @@
+.form__button_place_auth {
+  background: #fff;
+  color: #000;
+  margin-top: calc(216px - 34px);
+}
+
+@media screen and (max-width: 768px) {
+  .form__button_place_auth {
+    margin-top: calc(173px - 34px);
+  }
+}

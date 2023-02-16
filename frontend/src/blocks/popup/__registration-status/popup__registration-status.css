@@ -1,0 +1,6 @@
+.popup__registration-status {
+  width: 120px;
+  height: 120px;
+  margin: calc(60px - 36px) auto 32px;
+  background: url(../../../images/status-err.png);
+}

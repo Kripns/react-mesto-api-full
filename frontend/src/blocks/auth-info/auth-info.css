@@ -1,0 +1,7 @@
+.auth-info {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  color: #fff;
+  transition: padding-block .5s, transform .5s;
+}

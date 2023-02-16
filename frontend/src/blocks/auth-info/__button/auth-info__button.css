@@ -1,0 +1,15 @@
+.auth-info__button {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 22px;
+  cursor: pointer;
+  transition: opacity .3s;
+}
+
+.auth-info__button:hover {
+  opacity: .6;
+}

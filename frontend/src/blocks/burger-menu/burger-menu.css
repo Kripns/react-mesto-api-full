@@ -1,0 +1,16 @@
+.burger-menu {
+  visibility: hidden;
+  height: fit-content;
+  cursor: pointer;
+  transition: opacity .3s;
+}
+
+@media screen and (max-width: 768px) {
+  .burger-menu {
+    visibility: visible;
+  }
+
+  .burger-menu:hover {
+    opacity: .6;
+  }
+}

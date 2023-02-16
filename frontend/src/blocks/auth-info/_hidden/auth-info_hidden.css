@@ -1,0 +1,5 @@
+.auth-info_hidden {
+  opacity: 0;
+  transform: scaleY(0);
+  height: 0;
+}

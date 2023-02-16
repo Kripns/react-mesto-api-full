@@ -1,0 +1,13 @@
+.auth-page__subheading {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  margin-block: 0;
+  padding-top: 15px;
+}
+
+@media screen and (max-width: 768px) {
+  .auth-page__subheading {
+    padding-top: 20px;
+  }
+}
