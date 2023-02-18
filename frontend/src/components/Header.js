@@ -75,13 +75,13 @@ function Header(props) {
           />
         )}
         <Route
-          path='/sign-in'
+          path='/signin'
           element={
             <header className='header'>
               <img className='header__logo' src={path} alt='логотип' />
               <nav className='header__menu'>
                 <div className='auth-info'>
-                  <Link className='auth-info__link' to='/sign-up'>
+                  <Link className='auth-info__link' to='/signup'>
                     Регистрация
                   </Link>
                 </div>
@@ -90,13 +90,13 @@ function Header(props) {
           }
         />
         <Route
-          path='/sign-up'
+          path='/signup'
           element={
             <header className='header'>
               <img className='header__logo' src={path} alt='логотип' />
               <nav className='header__menu'>
                 <div className='auth-info'>
-                  <Link className='auth-info__link' to='/sign-in'>
+                  <Link className='auth-info__link' to='/signin'>
                     Войти
                   </Link>
                 </div>

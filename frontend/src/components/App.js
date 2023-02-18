@@ -11,7 +11,7 @@ import AddPlacePopup from './AddPlacePopup';
 import ConfirmationPopup from './ConfirmationPopup';
 import ImagePopup from './ImagePopup';
 import api from '../utils/Api';
-import { register, login, checkToken } from '../utils/Auth';
+import { register, login, logout, checkAuth } from '../utils/Auth';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import InfoTooltip from './InfoTooltip';
 
@@ -124,7 +124,7 @@ function App() {
       .then(res => {
         if (res) {
           setIsRegistered(true);
-          navigate('/sign-in');
+          navigate('/signin');
         }
       })
       .catch(err => {
@@ -139,21 +139,27 @@ function App() {
       return;
     }
     login(email, password)
-      .then(data => {
-        if (data.token) {
+      .then(res => {
+        if (res) {
           setIsLoggedIn(true);
           setEmail(email);
           navigate('/');
-        }
+          console.log('cookies', document.cookie)
+      } else {
+          Promise.reject(new Error(`Произошла ошибка ${res.status}`));
+      }
       })
       .catch(err => console.log(err));
   }
 
   function handleLogout() {
-    localStorage.removeItem('token');
-    setEmail('');
-    navigate('/sign-in');
-    setIsLoggedIn(false);
+    logout()
+      .then(() => {
+        setEmail('');
+        navigate('/signin');
+        setIsLoggedIn(false);
+      })
+      .catch(console.log);
   }
 
   //Обработчик лайков
@@ -184,33 +190,43 @@ function App() {
 
   //Эффекты
   React.useEffect(() => {
-    if (!localStorage.getItem('token')) {
-      return;
-    }
-    checkToken()
-      .then(res => {
-        if (res) {
-          setEmail(res.data.email);
-          setIsLoggedIn(true);
-          navigate('/');
-        }
+    console.log('cookies', document.cookie)
+    checkAuth()
+    .then(res => {
+      if (res) {
+        Promise.all([api.getUser(), api.getCards()])
+          .then(resArr => {
+            setCurrentUser(resArr[0]);
+            setCards(resArr[1]);
+            setEmail(resArr[0]['email']);
+            setIsLoggedIn(true);
+            navigate('/');
+          })
+        // setEmail(res.data.email);
+        // setIsLoggedIn(true);
+        // navigate('/');
+      } else {
+          setEmail('');
+          setIsLoggedIn(false);
+          navigate('/signin');
+      }
       })
-      .catch(err => console.log(err));
+    .catch(err => console.log(err));
   }, []);
 
-  React.useEffect(() => {
-    api
-      .getCards()
-      .then(cardList => setCards(cardList))
-      .catch(err => console.log(err));
-  }, []);
+  // React.useEffect(() => {
+  //   api
+  //     .getCards()
+  //     .then(cardList => setCards(cardList))
+  //     .catch(err => console.log(err));
+  // }, []);
 
-  React.useEffect(() => {
-    api
-      .getUser()
-      .then(userInfo => setCurrentUser(userInfo))
-      .catch(err => console.log(err));
-  }, []);
+  // React.useEffect(() => {
+  //   api
+  //     .getUser()
+  //     .then(userInfo => setCurrentUser(userInfo))
+  //     .catch(err => console.log(err));
+  // }, []);
 
   React.useEffect(() => {
     function closeByEscape(e) {
@@ -248,7 +264,7 @@ function App() {
             }
           />
           <Route
-            path='/sign-in'
+            path='/signin'
             element={
               <AuthForm
                 key='0'
@@ -259,7 +275,7 @@ function App() {
             }
           />
           <Route
-            path='/sign-up'
+            path='/signup'
             element={
               <AuthForm
                 key='1'
@@ -269,7 +285,7 @@ function App() {
               >
                 <p className='auth__subheading'>
                   Уже зарегистрированы?
-                  <Link className='auth-page__link' to='/sign-in'>
+                  <Link className='auth-page__link' to='/signin'>
                     {' '}
                     Войти
                   </Link>

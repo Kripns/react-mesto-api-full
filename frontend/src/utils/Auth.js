@@ -1,4 +1,6 @@
-export const BASE_URL = 'https://auth.nomoreparties.co';
+
+import apiConfig from './apiConfig';
+const BASE_URL = apiConfig.url;
 
 function request(url, options) {
   return fetch(url, options).then(handleResponse);
@@ -11,9 +13,7 @@ function handleResponse(res) {
 export function register(email, password) {
   return request(`${BASE_URL}/signup`, {
     method: 'POST',
-    headers: {
-      'Content-type': 'application/json',
-    },
+    headers: apiConfig.headers,
     body: JSON.stringify({ email, password }),
   });
 }
@@ -23,22 +23,23 @@ export function login(email, password) {
     method: 'POST',
     headers: { 'Content-type': 'application/json' },
     body: JSON.stringify({ email, password }),
-  }).then(data => {
-    if (data.token) {
-      localStorage.setItem('token', data.token);
-      return data;
-    } else {
-      return;
-    }
   });
 }
 
-export function checkToken() {
+export function logout() {
+  return request(`${BASE_URL}/signout`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: { 'Content-type': 'application/json' },
+  });
+}
+
+export function checkAuth() {
   return request(`${BASE_URL}/users/me`, {
     method: 'GET',
+    credentials: 'include',
     headers: {
       'Content-type': 'application/json',
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
     },
   });
 }
