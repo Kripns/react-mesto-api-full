@@ -8,7 +8,7 @@ import ForbiddenError from '../utils/errors/forbiden-error.js';
 export function getAllCards(req, res, next) {
   Card.find({})
     .populate('owner')
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => res.send(cards))
     .catch(next);
 }
 
@@ -17,7 +17,7 @@ export function createCard(req, res, next) {
   Card.create({ name, link, owner: req.user._id })
     .then((card) => {
       if (!isUrl(link)) throw new BadRequestError('Неправильный формат ссылки');
-      return res.send({ data: card });
+      return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -36,7 +36,7 @@ export function deleteCard(req, res, next) {
         throw new ForbiddenError('Недостаточно прав для удаления карточки');
       }
       Card.findByIdAndRemove(req.params.cardId)
-        .then((removedCard) => res.send({ data: removedCard }))
+        .then((removedCard) => res.send(removedCard))
         .catch(next);
     })
     .catch((err) => {
@@ -56,7 +56,7 @@ export function likeCard(req, res, next) {
   )
     .then((card) => {
       if (!card) throw new NotFoundError('Запрашиваемая карточка не найдена');
-      return res.send({ data: card });
+      return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -75,7 +75,7 @@ export function dislikeCard(req, res, next) {
   )
     .then((card) => {
       if (!card) throw new NotFoundError('Запрашиваемая карточка не найдена');
-      return res.send({ data: card });
+      return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {

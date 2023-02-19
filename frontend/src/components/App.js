@@ -11,7 +11,7 @@ import AddPlacePopup from './AddPlacePopup';
 import ConfirmationPopup from './ConfirmationPopup';
 import ImagePopup from './ImagePopup';
 import api from '../utils/Api';
-import { register, login, logout, checkAuth } from '../utils/Auth';
+import { register, login, checkToken } from '../utils/Auth';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import InfoTooltip from './InfoTooltip';
 
@@ -134,33 +134,57 @@ function App() {
       .finally(() => setIsInfoTooltipOpen(true));
   }
 
+  // function handleLogin(email, password) {
+  //   if (!email || !password) {
+  //     return;
+  //   }
+  //   login(email, password)
+  //     .then(res => {
+  //       if (res) {
+  //         setIsLoggedIn(true);
+  //         setEmail(email);
+  //         navigate('/');
+  //         console.log('cookies', document.cookie)
+  //     } else {
+  //         Promise.reject(new Error(`Произошла ошибка ${res.status}`));
+  //     }
+  //     })
+  //     .catch(err => console.log(err));
+  // }
+
+  // function handleLogout() {
+  //   logout()
+  //     .then(() => {
+  //       setEmail('');
+  //       navigate('/signin');
+  //       setIsLoggedIn(false);
+  //     })
+  //     .catch(console.log);
+  // }
+
+
   function handleLogin(email, password) {
     if (!email || !password) {
       return;
     }
     login(email, password)
-      .then(res => {
-        if (res) {
+      .then(data => {
+        if (data.token) {
           setIsLoggedIn(true);
           setEmail(email);
           navigate('/');
-          console.log('cookies', document.cookie)
-      } else {
-          Promise.reject(new Error(`Произошла ошибка ${res.status}`));
-      }
+        }
       })
       .catch(err => console.log(err));
   }
 
   function handleLogout() {
-    logout()
-      .then(() => {
-        setEmail('');
-        navigate('/signin');
-        setIsLoggedIn(false);
-      })
-      .catch(console.log);
+    localStorage.removeItem('jwt');
+    setEmail('');
+    navigate('/signin');
+    setIsLoggedIn(false);
   }
+
 
   //Обработчик лайков
   function handleCardLike(card) {
@@ -189,30 +213,52 @@ function App() {
   }
 
   //Эффекты
+  // React.useEffect(() => {
+  //   console.log('cookies', document.cookie)
+  //   checkAuth()
+  //   .then(res => {
+  //     if (res) {
+  //       Promise.all([api.getUser(), api.getCards()])
+  //         .then(resArr => {
+  //           setCurrentUser(resArr[0]);
+  //           setCards(resArr[1]);
+  //           setEmail(resArr[0]['email']);
+  //           setIsLoggedIn(true);
+  //           navigate('/');
+  //         })
+  //       // setEmail(res.data.email);
+  //       // setIsLoggedIn(true);
+  //       // navigate('/');
+  //     } else {
+  //         setEmail('');
+  //         setIsLoggedIn(false);
+  //         navigate('/signin');
+  //     }
+  //     })
+  //   .catch(err => console.log(err));
+  // }, []);
+
   React.useEffect(() => {
-    console.log('cookies', document.cookie)
-    checkAuth()
-    .then(res => {
-      if (res) {
-        Promise.all([api.getUser(), api.getCards()])
-          .then(resArr => {
+    if (!localStorage.getItem('jwt')) {
+      return;
+    }
+    checkToken()
+      .then(res => {
+        if (res) {
+          Promise.all([api.getUser(), api.getCards()]).then(resArr => {
             setCurrentUser(resArr[0]);
             setCards(resArr[1]);
             setEmail(resArr[0]['email']);
             setIsLoggedIn(true);
             navigate('/');
-          })
-        // setEmail(res.data.email);
-        // setIsLoggedIn(true);
-        // navigate('/');
-      } else {
+          })} else {
           setEmail('');
           setIsLoggedIn(false);
           navigate('/signin');
-      }
+        }
       })
-    .catch(err => console.log(err));
-  }, []);
+      .catch(err => console.log(err));
+  }, [navigate]);
 
   // React.useEffect(() => {
   //   api
