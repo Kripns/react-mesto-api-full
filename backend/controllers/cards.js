@@ -1,5 +1,4 @@
 /* eslint-disable import/extensions */
-import isUrl from 'validator/lib/isURL.js';
 import Card from '../models/card.js';
 import BadRequestError from '../utils/errors/bad-request-error.js';
 import NotFoundError from '../utils/errors/not-found-error.js';
@@ -16,8 +15,10 @@ export function createCard(req, res, next) {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => {
-      if (!isUrl(link)) throw new BadRequestError('Неправильный формат ссылки');
-      return res.send(card);
+      Card.findById(card._id)
+        .populate('owner')
+        .then((newCard) => res.send(newCard))
+        .catch(next);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -36,6 +37,7 @@ export function deleteCard(req, res, next) {
         throw new ForbiddenError('Недостаточно прав для удаления карточки');
       }
       Card.findByIdAndRemove(req.params.cardId)
+        .populate('owner')
         .then((removedCard) => res.send(removedCard))
         .catch(next);
     })
@@ -54,6 +56,7 @@ export function likeCard(req, res, next) {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .populate('owner')
     .then((card) => {
       if (!card) throw new NotFoundError('Запрашиваемая карточка не найдена');
       return res.send(card);
@@ -73,6 +76,7 @@ export function dislikeCard(req, res, next) {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .populate('owner')
     .then((card) => {
       if (!card) throw new NotFoundError('Запрашиваемая карточка не найдена');
       return res.send(card);

@@ -46,6 +46,62 @@ function App() {
 
   const navigate = useNavigate();
 
+  //Авторизация и регистрация
+  function handleRegister(email, password) {
+    if (!email || !password) return;
+    register(email, password)
+      .then(res => {
+        if (res) {
+          setIsRegistered(true);
+          navigate('/signin');
+        } else {
+          Promise.reject(new Error(`Произошла ошибка ${res.status}`));
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        setIsRegistered(false);
+      })
+      .finally(() => setIsInfoTooltipOpen(true));
+  }
+
+  function handleLogin(email, password) {
+    if (!email || !password) return;
+    login(email, password)
+      .then(res => {
+        if (res.token) {
+          updateCurrentState().then(() => {
+            navigate('/');
+          });
+        } else {
+          Promise.reject(new Error(`Произошла ошибка ${res.status}`));
+        }
+      })
+      .catch(err => console.log(err));
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('jwt');
+    setEmail('');
+    setIsLoggedIn(false);
+    setCurrentUser({});
+    setCards([]);
+    navigate('/signin');
+  }
+
+  // Обновление текущего стэйта
+  function updateCurrentState() {
+    return Promise.all([api.getUser(), api.getCards()])
+      .then(resArr => {
+        setCurrentUser(resArr[0]);
+        setCards(resArr[1]);
+        setEmail(resArr[0]['email']);
+        setIsLoggedIn(true);
+        navigate('/');
+      })
+      .catch(console.log);
+  }
+
   //Обработчики открытия попапов
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -116,79 +172,8 @@ function App() {
       .finally(() => setIsLoading(false));
   }
 
-  function handleRegister(email, password) {
-    if (!email || !password) {
-      return;
-    }
-    register(email, password)
-      .then(res => {
-        if (res) {
-          setIsRegistered(true);
-          navigate('/signin');
-        }
-      })
-      .catch(err => {
-        console.log(err);
-        setIsRegistered(false);
-      })
-      .finally(() => setIsInfoTooltipOpen(true));
-  }
-
-  // function handleLogin(email, password) {
-  //   if (!email || !password) {
-  //     return;
-  //   }
-  //   login(email, password)
-  //     .then(res => {
-  //       if (res) {
-  //         setIsLoggedIn(true);
-  //         setEmail(email);
-  //         navigate('/');
-  //         console.log('cookies', document.cookie)
-  //     } else {
-  //         Promise.reject(new Error(`Произошла ошибка ${res.status}`));
-  //     }
-  //     })
-  //     .catch(err => console.log(err));
-  // }
-
-  // function handleLogout() {
-  //   logout()
-  //     .then(() => {
-  //       setEmail('');
-  //       navigate('/signin');
-  //       setIsLoggedIn(false);
-  //     })
-  //     .catch(console.log);
-  // }
-
-
-  function handleLogin(email, password) {
-    if (!email || !password) {
-      return;
-    }
-    login(email, password)
-      .then(data => {
-        if (data.token) {
-          setIsLoggedIn(true);
-          setEmail(email);
-          navigate('/');
-        }
-      })
-      .catch(err => console.log(err));
-  }
-
-  function handleLogout() {
-    localStorage.removeItem('jwt');
-    setEmail('');
-    navigate('/signin');
-    setIsLoggedIn(false);
-  }
-
-
   //Обработчик лайков
-  function handleCardLike(card) {
-    const isLiked = card.likes.some(i => currentUser._id === i._id);
+  function handleCardLike(card, isLiked) {
     api
       .changeLikeCardStatus(card._id, isLiked)
       .then(newCard => {
@@ -213,66 +198,27 @@ function App() {
   }
 
   //Эффекты
-  // React.useEffect(() => {
-  //   console.log('cookies', document.cookie)
-  //   checkAuth()
-  //   .then(res => {
-  //     if (res) {
-  //       Promise.all([api.getUser(), api.getCards()])
-  //         .then(resArr => {
-  //           setCurrentUser(resArr[0]);
-  //           setCards(resArr[1]);
-  //           setEmail(resArr[0]['email']);
-  //           setIsLoggedIn(true);
-  //           navigate('/');
-  //         })
-  //       // setEmail(res.data.email);
-  //       // setIsLoggedIn(true);
-  //       // navigate('/');
-  //     } else {
-  //         setEmail('');
-  //         setIsLoggedIn(false);
-  //         navigate('/signin');
-  //     }
-  //     })
-  //   .catch(err => console.log(err));
-  // }, []);
-
   React.useEffect(() => {
-    if (!localStorage.getItem('jwt')) {
-      return;
-    }
+    if (!localStorage.getItem('jwt')) return;
     checkToken()
       .then(res => {
         if (res) {
-          Promise.all([api.getUser(), api.getCards()]).then(resArr => {
-            setCurrentUser(resArr[0]);
-            setCards(resArr[1]);
-            setEmail(resArr[0]['email']);
-            setIsLoggedIn(true);
-            navigate('/');
-          })} else {
-          setEmail('');
+          setIsLoggedIn(true);
+          navigate('/');
+        } else {
           setIsLoggedIn(false);
           navigate('/signin');
         }
       })
-      .catch(err => console.log(err));
-  }, [navigate]);
+      .catch(err => {
+        console.log(err);
+      });
+  }, []);
 
-  // React.useEffect(() => {
-  //   api
-  //     .getCards()
-  //     .then(cardList => setCards(cardList))
-  //     .catch(err => console.log(err));
-  // }, []);
-
-  // React.useEffect(() => {
-  //   api
-  //     .getUser()
-  //     .then(userInfo => setCurrentUser(userInfo))
-  //     .catch(err => console.log(err));
-  // }, []);
+  React.useEffect(() => {
+    if (!isLoggedIn) return;
+    updateCurrentState();
+  }, [isLoggedIn]);
 
   React.useEffect(() => {
     function closeByEscape(e) {

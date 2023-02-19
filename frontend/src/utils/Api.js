@@ -3,7 +3,6 @@ import apiConfig from './apiConfig';
 class Api {
   constructor(config) {
     this._url = config.url;
-    this._headers = config.headers;
   }
 
   _request(url, options) {
@@ -20,7 +19,10 @@ class Api {
   getCards() {
     return this._request(`${this._url}/cards`, {
       credentials: 'include',
-      headers: this._headers,
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+      },
     });
   }
 
@@ -28,7 +30,10 @@ class Api {
     return this._request(`${this._url}/users/me`, {
       method: 'PATCH',
       credentials: 'include',
-      headers: this._headers,
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+      },
       body: JSON.stringify(data),
     });
   }
@@ -36,7 +41,10 @@ class Api {
   getUser() {
     return this._request(`${this._url}/users/me`, {
       credentials: 'include',
-      headers: this._headers,
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+      },
     });
   }
 
@@ -44,7 +52,10 @@ class Api {
     return this._request(`${this._url}/cards`, {
       method: 'POST',
       credentials: 'include',
-      headers: this._headers,
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+      },
       body: JSON.stringify(data),
     });
   }
@@ -53,7 +64,10 @@ class Api {
     return this._request(`${this._url}/cards/${cardId}/likes`, {
       method: `${isLiked ? 'DELETE' : 'PUT'}`,
       credentials: 'include',
-      headers: this._headers,
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+      },
     });
   }
 
@@ -61,7 +75,10 @@ class Api {
     return this._request(`${this._url}/cards/${cardId}`, {
       method: 'DELETE',
       credentials: 'include',
-      headers: this._headers,
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+      },
     });
   }
 
@@ -69,7 +86,10 @@ class Api {
     return this._request(`${this._url}/users/me/avatar`, {
       method: 'PATCH',
       credentials: 'include',
-      headers: this._headers,
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+      },
       body: JSON.stringify(avatar),
     });
   }
