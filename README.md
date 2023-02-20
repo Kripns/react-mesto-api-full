@@ -3,6 +3,16 @@
   
 Пожалуйста, прикрепите в это описание ссылку на сайт, размещенный на Яндекс.Облаке.
 
-[Ссылка на сайт](https://psid.students.nomoredomains.work/)
-[Ссылка на сервер](https://api.psid.students.nomoredomains.work/)
 ## IP 51.250.15.31
+
+### [Frontend](https://psid.students.nomoredomains.work/)
+
+### [Backend](https://api.psid.students.nomoredomains.work/)
+
+## Для автотестов:
+
+IP  51.250.15.31
+
+Frontend  https://psid.students.nomoredomains.work/
+
+Backend  https://api.psid.students.nomoredomains.work/
